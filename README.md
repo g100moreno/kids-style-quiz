@@ -4,7 +4,7 @@ A parent-focused style onboarding experience for a children's clothing subscript
 
 ## Live Demo
 
-🔗 [View Live](https://your-vercel-url-here.vercel.app)
+🔗 [View Live](https://kids-style-quiz.vercel.app/)
 
 ## What It Does
 
