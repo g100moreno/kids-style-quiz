@@ -22,6 +22,48 @@ Guides parents through a personalized quiz to build a style profile for their ba
 - Budget and delivery frequency
 - Colorful summary screen with all selections
 
+## Shopify Integration
+
+After completing the quiz, real products are fetched from a Shopify Storefront API and
+recommended based on the answers — age range, gender, style vibes, priorities, occasions,
+and budget.
+
+### How it works
+
+- **`src/lib/shopify.js`** — GraphQL client that fetches up to 250 products from the
+  Storefront API and normalizes them to `{ id, title, price, image, productUrl, tags }`.
+- **`src/lib/recommendations.js`** — Maps quiz answers to Shopify product tags, then
+  applies a hard filter (age tag + gender + budget ceiling). If fewer than 3 products
+  survive, the age constraint is relaxed and the filter re-runs. Each surviving product
+  is scored by how many of the selected style vibe, priority, and occasion tags it
+  carries. The top 6 are returned, sorted by score descending then price ascending.
+- **`src/components/ProductMatches.jsx`** — Handles the four fetch states (loading,
+  error, empty, ok) and renders a product grid with image, price, and a link to the
+  Shopify product page.
+
+### Demo store
+
+The integration points at a Shopify dev store. Dev stores are password-protected by
+default (a Shopify limitation on free dev plans) — first-time visitors need to enter
+the password **skayld** once, after which product links land directly on the product
+page for the rest of the session.
+
+### Configuration
+
+To point at a different store, set these variables in `.env.local`:
+
+| Variable | Description |
+|---|---|
+| `VITE_SHOPIFY_DOMAIN` | Store domain, e.g. `mystore.myshopify.com` |
+| `VITE_SHOPIFY_STOREFRONT_TOKEN` | Storefront API access token (read-only product scopes) |
+
+### Scale note
+
+The current implementation fetches all products and filters client-side, which is
+appropriate for a demo store with 20 products. For a production store with thousands of
+products, the GraphQL query would push filters server-side using Shopify's `query`
+argument — e.g. `products(first: 6, query: "tag:age-3-5 AND tag:machine-washable")`.
+
 ## Built With
 
 - React
@@ -56,6 +98,7 @@ The test suite uses [Playwright](https://playwright.dev) and covers three areas:
 | `tests/smoke.spec.js` | Page loads, welcome screen renders, first navigation works |
 | `tests/quiz-flow.spec.js` | Full happy-path walkthrough, summary content, start over, Enter-key navigation |
 | `tests/navigation.spec.js` | Progress bar visibility, back button logic, Continue disabled/enabled state, single-choice steps |
+| `tests/shopify.spec.js` | Shopify integration tests — coming in next commit |
 
 ### Run against the local dev server
 

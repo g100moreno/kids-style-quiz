@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import palette from "./lib/palette";
+import ProductMatches from "./components/ProductMatches";
 
 const FONTS_URL = "https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap";
 
@@ -151,31 +153,12 @@ const STEPS = [
   },
 ];
 
-const palette = {
-  bg: "#FFF9F5",
-  card: "#FFFFFF",
-  accent: "#3B3B3B",
-  soft: "#F0E8E0",
-  softHover: "#E6DCD2",
-  text: "#3B3B3B",
-  textMuted: "#9B9490",
-  textLight: "#C0B8B0",
-  peach: "#F4A98A",
-  peachSoft: "#FDE8DE",
-  mint: "#7EBAA8",
-  mintSoft: "#E2F0EB",
-  lavender: "#B8A9D4",
-  lavenderSoft: "#EDE8F5",
-  border: "#F0E8E0",
-  selected: "#3B3B3B",
-  selectedText: "#FFFFFF",
-  warmWhite: "#FFFCF9",
-};
 
 export default function KidsStyleQuiz() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [animKey, setAnimKey] = useState(0);
+  const [showMatches, setShowMatches] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -438,7 +421,7 @@ export default function KidsStyleQuiz() {
 
           <div style={{ display: "flex", gap: 12 }}>
             <button
-              onClick={() => { setStep(0); setAnswers({}); setAnimKey((k) => k + 1); }}
+              onClick={() => { setStep(0); setAnswers({}); setShowMatches(false); setAnimKey((k) => k + 1); }}
               style={{
                 flex: 1,
                 padding: "14px",
@@ -455,6 +438,7 @@ export default function KidsStyleQuiz() {
               Start over
             </button>
             <button
+              onClick={() => setShowMatches(true)}
               style={{
                 flex: 1,
                 padding: "14px",
@@ -468,9 +452,16 @@ export default function KidsStyleQuiz() {
                 cursor: "pointer",
               }}
             >
-              Get my first box!
+              See your matches →
             </button>
           </div>
+
+          {showMatches && (
+            <ProductMatches
+              answers={answers}
+              onStartOver={() => { setStep(0); setAnswers({}); setShowMatches(false); setAnimKey((k) => k + 1); }}
+            />
+          )}
         </div>
       );
     }
