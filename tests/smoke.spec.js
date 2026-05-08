@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('welcome screen loads', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/kids-style-quiz/i);
+  await expect(page).toHaveTitle(/Style Match for Kids/i);
   await expect(page.getByText('Little styles, big smiles')).toBeVisible();
   await expect(page.getByRole('button', { name: "Let's go!" })).toBeVisible();
 });

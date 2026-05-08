@@ -1,6 +1,6 @@
 ![Playwright Tests](https://github.com/g100moreno/kids-style-quiz/actions/workflows/playwright.yml/badge.svg)
 
-# Trendsend Kids — Style Profile Quiz
+# Style Match for Kids — Style Profile Quiz
 
 A parent-focused style onboarding experience for a children's clothing subscription concept, inspired by [Trendsend by Evereve](https://www.trendsend.com). Parents fill out a style profile for their child, and a stylist uses it to curate their first box.
 

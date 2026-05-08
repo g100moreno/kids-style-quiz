@@ -271,7 +271,7 @@ export default function KidsStyleQuiz() {
             textTransform: "uppercase",
             marginBottom: 12,
           }}>
-            TRENDSEND KIDS
+            STYLE MATCH KIDS
           </div>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
@@ -727,7 +727,7 @@ export default function KidsStyleQuiz() {
                 color: palette.text,
                 letterSpacing: "0.02em",
               }}>
-                <span style={{ color: palette.peach }}>TRENDSEND</span> <span style={{ fontSize: 16, color: palette.textLight }}>kids</span>
+                <span style={{ color: palette.peach }}>STYLE MATCH</span> <span style={{ fontSize: 16, color: palette.textLight }}>kids</span>
               </div>
               <div style={{
                 fontSize: 13,
