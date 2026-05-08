@@ -1,7 +1,3 @@
-const DOMAIN = import.meta.env.VITE_SHOPIFY_DOMAIN;
-const TOKEN = import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN;
-const ENDPOINT = `https://${DOMAIN}/api/2024-10/graphql.json`;
-
 const QUERY = `{
   products(first: 250) {
     edges {
@@ -27,13 +23,29 @@ const QUERY = `{
   }
 }`;
 
-export async function fetchProducts() {
+function normalize(node, domain) {
+  const { amount, currencyCode } = node.priceRange.minVariantPrice;
+  return {
+    id: node.id,
+    title: node.title,
+    description: node.description,
+    price: parseFloat(amount),
+    currency: currencyCode,
+    image: node.featuredImage?.url ?? null,
+    imageAlt: node.featuredImage?.altText ?? node.title,
+    productUrl: node.onlineStoreUrl ?? `https://${domain}/products/${node.handle}`,
+    tags: node.tags.map((t) => t.toLowerCase()),
+  };
+}
+
+export async function fetchAllProducts({ domain, storefrontToken }) {
+  const endpoint = `https://${domain}/api/2024-10/graphql.json`;
   try {
-    const res = await fetch(ENDPOINT, {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Shopify-Storefront-Access-Token": TOKEN,
+        "X-Shopify-Storefront-Access-Token": storefrontToken,
       },
       body: JSON.stringify({ query: QUERY }),
     });
@@ -50,20 +62,7 @@ export async function fetchProducts() {
       return [];
     }
 
-    return data.products.edges.map(({ node }) => {
-      const { amount, currencyCode } = node.priceRange.minVariantPrice;
-      return {
-        id: node.id,
-        title: node.title,
-        description: node.description,
-        price: parseFloat(amount),
-        currency: currencyCode,
-        image: node.featuredImage?.url ?? null,
-        imageAlt: node.featuredImage?.altText ?? node.title,
-        productUrl: node.onlineStoreUrl ?? `https://${DOMAIN}/products/${node.handle}`,
-        tags: node.tags.map((t) => t.toLowerCase()),
-      };
-    });
+    return data.products.edges.map(({ node }) => normalize(node, domain));
   } catch (err) {
     console.error("Shopify fetch error:", err);
     return [];

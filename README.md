@@ -30,13 +30,20 @@ and budget.
 
 ### How it works
 
-- **`src/lib/shopify.js`** — GraphQL client that fetches up to 250 products from the
-  Storefront API and normalizes them to `{ id, title, price, image, productUrl, tags }`.
-- **`src/lib/recommendations.js`** — Maps quiz answers to Shopify product tags, then
-  applies a hard filter (age tag + gender + budget ceiling). If fewer than 3 products
-  survive, the age constraint is relaxed and the filter re-runs. Each surviving product
-  is scored by how many of the selected style vibe, priority, and occasion tags it
-  carries. The top 6 are returned, sorted by score descending then price ascending.
+- **`src/lib/shopify-quiz-matcher/`** — Reusable, domain-agnostic matching engine. The
+  GraphQL client (`client.js`) fetches up to 250 products from the Storefront API and
+  normalizes them to `{ id, title, price, image, productUrl, tags }`. The matcher
+  (`matcher.js`) applies a hard filter (age tag + gender + budget ceiling), relaxes the
+  age constraint and retries if fewer than 3 products survive, then scores each
+  surviving product by how many soft-match tags it carries and returns the top 6 sorted
+  by score desc then price asc. Nothing in the lib knows about kids clothing — it's
+  driven entirely by the config the consumer passes in. See
+  [`src/lib/shopify-quiz-matcher/README.md`](src/lib/shopify-quiz-matcher/README.md)
+  for the full API and a non-kids usage example.
+- **`src/config/recommendations.js`** — The kids-clothing-specific config that the
+  matcher consumes: tag dictionaries for ages, genders, vibes, priorities, and
+  occasions, plus a `prepareAnswers` helper that converts the user-facing budget string
+  (e.g. `"$20–$40"`) into the numeric cap the matcher expects.
 - **`src/components/ProductMatches.jsx`** — Handles the four fetch states (loading,
   error, empty, ok) and renders a product grid with image, price, and a link to the
   Shopify product page.

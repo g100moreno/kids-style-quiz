@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { fetchProducts } from "../lib/shopify";
-import { getRecommendations } from "../lib/recommendations";
+import { fetchAllProducts, matchProducts } from "../lib/shopify-quiz-matcher";
+import recommendationsConfig, { prepareAnswers } from "../config/recommendations";
 import palette from "../lib/palette";
 
 function formatPrice(price, currency) {
@@ -95,14 +95,17 @@ export default function ProductMatches({ answers, onStartOver }) {
     let cancelled = false;
     setStatus("loading");
 
-    fetchProducts()
+    fetchAllProducts({
+      domain: import.meta.env.VITE_SHOPIFY_DOMAIN,
+      storefrontToken: import.meta.env.VITE_SHOPIFY_STOREFRONT_TOKEN,
+    })
       .then((all) => {
         if (cancelled) return;
         if (all.length === 0) {
           setStatus("error");
           return;
         }
-        const matches = getRecommendations(answers, all);
+        const matches = matchProducts(all, prepareAnswers(answers), recommendationsConfig);
         if (matches.length === 0) {
           setStatus("empty");
         } else {
