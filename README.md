@@ -50,7 +50,7 @@ page for the rest of the session.
 
 ### Configuration
 
-To point at a different store, set these variables in `.env.local`:
+To point at a different store, copy `.env.example` to `.env.local` and set the values:
 
 | Variable | Description |
 |---|---|
@@ -82,23 +82,28 @@ argument — e.g. `products(first: 6, query: "tag:age-3-5 AND tag:machine-washab
 - Fully responsive
 
 ## Run Locally
+
 ```bash
 git clone https://github.com/g100moreno/kids-style-quiz.git
 cd kids-style-quiz
 npm install
+cp .env.example .env.local
+# Edit .env.local with the Shopify domain and Storefront token (ping me for the token)
 npm run dev
 ```
 
+The app opens at http://localhost:5173.
+
 ## Testing
 
-The test suite uses [Playwright](https://playwright.dev) and covers three areas:
+The test suite uses [Playwright](https://playwright.dev) and covers four areas:
 
 | File | What it covers |
 |---|---|
 | `tests/smoke.spec.js` | Page loads, welcome screen renders, first navigation works |
 | `tests/quiz-flow.spec.js` | Full happy-path walkthrough, summary content, start over, Enter-key navigation |
 | `tests/navigation.spec.js` | Progress bar visibility, back button logic, Continue disabled/enabled state, single-choice steps |
-| `tests/shopify.spec.js` | Shopify integration tests — coming in next commit |
+| `tests/shopify-matches.spec.js` | Shopify product fetch — happy path, empty results, error state, retry recovery, request shape |
 
 ### Run against the local dev server
 
@@ -131,8 +136,12 @@ This is useful for smoke-testing a deployment without checking out the repo loca
 
 - **Visual regression** — `toHaveScreenshot()` snapshots to catch unintended UI changes across the palette and animations
 - **Real accessibility scans** — integrate [axe-core](https://github.com/dequelabs/axe-core) via `@axe-core/playwright` to audit ARIA, contrast, and keyboard trappability on each step
-- **Request mocking** — use `page.route()` to intercept any future external API calls (stylist matching, profile submission) so tests stay fast and deterministic
+- **Mocking for future APIs** — `page.route()` is already set up for Shopify in `shopify-matches.spec.js`; the same pattern extends to any new external APIs (stylist matching, profile submission)
 - **CI sharding** — split the suite across parallel runners with `--shard=1/4` to cut wall-clock time as the suite grows
+
+## Deployment
+
+The project auto-deploys to [Vercel](https://vercel.com) on every push to `main`. Environment variables live under **Settings → Environments → Production → Environment Variables** in the Vercel dashboard. The same variables need to be added to the Preview environment if you want preview deployments (auto-created on pull requests) to also reach Shopify.
 
 ## What I'd Improve With More Time
 
